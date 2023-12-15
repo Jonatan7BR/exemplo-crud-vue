@@ -3,6 +3,8 @@
   <main>
     <RouterView />
   </main>
+  <Loader />
+  <Snackbar />
 </template>
 
 <script setup lang="ts">
@@ -12,6 +14,8 @@ import { RouterView } from 'vue-router';
 
 import HeaderComponent from './components/HeaderComponent.vue';
 import { useThemeStore } from '@/store/theme-store';
+import Loader from './components/Loader.vue';
+import Snackbar from './components/Snackbar.vue';
 
 const themeStore = useThemeStore();
 const { isDarkMode } = storeToRefs(themeStore);

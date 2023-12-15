@@ -16,13 +16,13 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="person in peopleData">
+                <tr v-for="person in people">
                     <td>{{ cpfFormat(person.cpf) }}</td>
                     <td>{{ person.name }}</td>
                     <td>{{ person.city }}, {{ person.state }}</td>
                     <td><button type="button" @click="goToEditPage(person.id)">Editar</button></td>
                 </tr>
-                <tr v-if="peopleData.length === 0">
+                <tr v-if="people.length === 0">
                     <td colspan="4">Não há pessoas cadastradas.</td>
                 </tr>
             </tbody>
@@ -54,69 +54,21 @@
 </style>
 
 <script setup lang="ts">
-import moment from 'moment';
-import { ref } from 'vue';
+import { onMounted } from 'vue';
 
-import type { Person } from '@/models/person';
 import { cpfFormat } from '@/utils/data-format';
 import { useRouter } from 'vue-router';
-
-const FAKE_DATA: Person[] = [
-    {
-        id: 1,
-        name: 'Olivia Analu Moreira',
-        cpf: '84427553303',
-        birthday: moment('1997-06-24').toDate(),
-        email: 'oliviaanalumoreira@advogadostb.com.br',
-        phone: '48988129805',
-        city: 'Florianópolis',
-        state: 'SC'
-    },
-    {
-        id: 2,
-        name: 'Catarina Cláudia Bernardes',
-        cpf: '05185344130',
-        birthday: moment('1956-03-06').toDate(),
-        email: 'catarinaclaudiabernardes@aguabr.com.br',
-        phone: '83986028722',
-        city: 'Campina Grande',
-        state: 'PB'
-    },
-    {
-        id: 3,
-        name: 'Jaqueline Mariane Yasmin Martins',
-        cpf: '43852716748',
-        birthday: moment('1956-01-14').toDate(),
-        email: 'jaqueline.mariane.martins@silnave.com.br',
-        phone: '91991024603',
-        city: 'Belém',
-        state: 'PA'
-    },
-    {
-        id: 4,
-        name: 'Vicente Oliver Caio Lopes',
-        cpf: '90231999283',
-        birthday: moment('1971-11-16').toDate(),
-        email: 'vicente.oliver.lopes@weatherford.com',
-        phone: '91989283146',
-        city: 'Castanhal',
-        state: 'PA'
-    },
-    {
-        id: 5,
-        name: 'Caroline Elisa Gabriela Moraes',
-        cpf: '51679864432',
-        birthday: moment('1983-02-23').toDate(),
-        email: 'caroline_moraes@nogueiramoura.com.br',
-        phone: '92995800236',
-        city: 'Manaus',
-        state: 'AM'
-    }
-];
+import { usePeopleStore } from '@/store/people-store';
+import { storeToRefs } from 'pinia';
+import { MessageType, useMessageStore } from '@/store/message-store';
+import { useLoaderStore } from '@/store/loader-store';
 
 const router = useRouter();
+const peopleStore = usePeopleStore();
+const messageStore = useMessageStore();
+const loaderStore = useLoaderStore();
 
-const peopleData = ref(FAKE_DATA);
+const { people } = storeToRefs(peopleStore);
 
 const goToEditPage = (id: number): void => {
     router.push(`/editar/${id}`);
@@ -125,4 +77,16 @@ const goToEditPage = (id: number): void => {
 const goToNewPage = (): void => {
     router.push('/novo');
 };
+
+onMounted(async () => {
+    console.log('onMounted');
+    loaderStore.setLoading(true);
+    try {
+        await peopleStore.getPeople();
+    } catch {
+        messageStore.sendMessage('Ocorreu um erro ao carregar os dados', MessageType.Error);
+    } finally {
+        loaderStore.setLoading(false);
+    }
+});
 </script>
