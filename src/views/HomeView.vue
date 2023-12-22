@@ -79,7 +79,6 @@ const goToNewPage = (): void => {
 };
 
 onMounted(async () => {
-    console.log('onMounted');
     loaderStore.setLoading(true);
     try {
         await peopleStore.getPeople();

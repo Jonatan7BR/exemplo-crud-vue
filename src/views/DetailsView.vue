@@ -39,10 +39,17 @@
             </select>
         </div>
 
-        <div class="span2">
+        <div class="span2 button-row">
             <button type="submit">{{ buttonLabel }}</button>
+            <button v-if="deletable" type="button" @click="() => confirmDelete()">Excluir</button>
         </div>
     </form>
+
+    <ConfirmModal 
+        :visible="deleteModalVisible" 
+        :dialog-text="deleteModalText" 
+        @confirm="e => deleteData(e)" 
+    />
 </template>
 
 <style scoped lang="scss">
@@ -71,37 +78,44 @@
         display: flex;
         justify-content: center;
     }
+
+    .button-row {
+        display: flex;
+        gap: 5px;
+    }
 }
 </style>
 
 <script setup lang="ts">
-import type { Person } from '@/models/person';
+import ConfirmModal from '@/components/ConfirmModal.vue';
+import type { PersonBody } from '@/models/person';
+import { useLoaderStore } from '@/store/loader-store';
+import { MessageType, useMessageStore } from '@/store/message-store';
+import { usePeopleStore } from '@/store/people-store';
 import { STATES } from '@/utils/states';
 import { cpfValid, phoneValid } from '@/utils/validation';
-import moment from 'moment';
-import { computed, onMounted, ref } from 'vue';
+import { storeToRefs } from 'pinia';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-
-const FAKE_DATA: Person = {
-  id: 1,
-  name: 'Olivia Analu Moreira',
-  cpf: '84427553303',
-  birthday: moment('1997-06-24').toDate(),
-  email: 'oliviaanalumoreira@advogadostb.com.br',
-  phone: '48988129805',
-  city: 'Florianópolis',
-  state: 'SC'
-};
 
 const route = useRoute();
 const router = useRouter();
+const loaderStore = useLoaderStore();
+const messageStore = useMessageStore();
+
+const peopleStore = usePeopleStore();
+const { person } = storeToRefs(peopleStore);
 
 const { id } = route.params;
 
+const deleteModalVisible = ref(false);
+
 const title = computed(() => id ? 'Editar cadastro' : 'Cadastrar pessoa');
 const buttonLabel = computed(() => id ? 'Atualizar' : 'Cadastrar');
+const deletable = computed(() => !!id);
 
 const states = ref(STATES.sort((a, b) => a.name.localeCompare(b.name)));
+const deleteModalText = 'Deseja excluir este cadastro?';
 
 const name = ref('');
 const cpf = ref('');
@@ -111,23 +125,96 @@ const phone = ref('');
 const city = ref('');
 const state = ref('');
 
-const sendData = (): void => {
-    if (!cpfValid(cpf.value) || !phoneValid(phone.value)) {
+const sendData = async (): Promise<void> => {
+    if (!cpfValid(cpf.value)) {
+        messageStore.sendMessage('O número do CPF está inválido', MessageType.Error);
+        return;
+    }
+    if (!phoneValid(phone.value)) {
+        messageStore.sendMessage('O número de telefone está em um formato inválido', MessageType.Error);
         return;
     }
 
-    router.push('/');
+    const body: PersonBody = {
+        name: name.value,
+        cpf: cpf.value,
+        birthday: birthday.value,
+        email: email.value,
+        phone: phone.value,
+        city: city.value,
+        state: state.value
+    };
+    loaderStore.setLoading(true);
+    if (id) {
+        try {
+            await peopleStore.updatePerson(+id, body);
+            messageStore.sendMessage('Dados atualizados com sucesso');
+            router.push('/');
+        } catch {
+            messageStore.sendMessage('Não foi possível atualizar os dados do cadastro', MessageType.Error);
+        } finally {
+            loaderStore.setLoading(false);
+        }
+    } else {
+        try {
+            await peopleStore.registerPerson(body);
+            messageStore.sendMessage('Dados cadastrados com sucesso');
+            router.push('/');
+        } catch {
+            messageStore.sendMessage('Não foi possível realizar o cadastro dos dados.', MessageType.Error);
+        } finally {
+            loaderStore.setLoading(false);
+        }
+    }
 };
 
-onMounted(() => {
+const confirmDelete = (): void => {
+    deleteModalVisible.value = true;
+};
+
+const deleteData = async (confirmed: boolean): Promise<void> => {
+    deleteModalVisible.value = false;
+    if (!confirmed) {
+        return;
+    }
+    loaderStore.setLoading(true);
+    try {
+        await peopleStore.removePerson(+id);
+        messageStore.sendMessage('Dados excluídos com sucesso');
+        router.push('/');
+    } catch {
+        messageStore.sendMessage('Não foi possível excluir os dados', MessageType.Error);
+    } finally {
+        loaderStore.setLoading(false);
+    }
+};
+
+onMounted(async () => {
+    if (Array.isArray(id) || !parseInt(id)) {
+        router.push('/');
+        return;
+    }
     if (id) {
-        name.value = FAKE_DATA.name;
-        cpf.value = FAKE_DATA.cpf;
-        birthday.value = moment(FAKE_DATA.birthday).format('YYYY-MM-DD');
-        email.value = FAKE_DATA.email;
-        phone.value = FAKE_DATA.phone;
-        city.value = FAKE_DATA.city;
-        state.value = FAKE_DATA.state;
+        loaderStore.setLoading(true);
+        try {
+            await peopleStore.getPerson(+id);
+        } catch {
+            messageStore.sendMessage('Ocorreu um erro ao carregar os dados', MessageType.Error);
+        } finally {
+            loaderStore.setLoading(false);
+        }
+    }
+});
+
+watch(person, () => {
+    if (person.value) {
+        name.value = person.value.name;
+        cpf.value = person.value.cpf;
+        birthday.value = person.value.birthday;
+        email.value = person.value.email;
+        phone.value = person.value.phone;
+        city.value = person.value.city;
+        state.value = person.value.state;
     }
 });
 </script>

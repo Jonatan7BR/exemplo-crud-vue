@@ -3,14 +3,13 @@ import axios from "axios";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
-const API_URL = 'http://localhost:3000';
+const API_URL = 'http://localhost:3000/';
 
 export const usePeopleStore = defineStore('people', () => {
     const people = ref<Person[]>([]);
     const person = ref<Person | undefined>(undefined);
 
     const getPeople = async (): Promise<void> => {
-        console.log('getPeople');
         const response = await axios.get(`${API_URL}people`);
         people.value = response.data;
     };
