@@ -1,21 +1,16 @@
 <template>
-    <button
-        type="button"
-        class="toggle-theme material-symbols-outlined"
-        :title="buttonTitle"
-        @click="changeTheme()"
-    >
-        {{ isDarkMode ? 'dark_mode' : 'light_mode' }}
-    </button>
+	<button type="button" class="toggle-theme material-symbols-outlined" :title="buttonTitle" @click="changeTheme()">
+		{{ isDarkMode ? 'dark_mode' : 'light_mode' }}
+	</button>
 </template>
 
 <style scoped lang="scss">
 .toggle-theme {
-    cursor: pointer;
-    background-color: transparent;
-    border: none;
-    outline: none;
-    color: #FFF;
+	cursor: pointer;
+	background-color: transparent;
+	border: none;
+	outline: none;
+	color: #fff;
 }
 </style>
 
@@ -26,9 +21,9 @@ import { computed } from 'vue';
 
 const themeStore = useThemeStore();
 const { isDarkMode } = storeToRefs(themeStore);
-const buttonTitle = computed(() => isDarkMode ? 'Mudar para tema claro' : 'Mudar para tema escuro');
+const buttonTitle = computed(() => (isDarkMode ? 'Mudar para tema claro' : 'Mudar para tema escuro'));
 
 const changeTheme = (): void => {
-    themeStore.toggleTheme();
+	themeStore.toggleTheme();
 };
 </script>
