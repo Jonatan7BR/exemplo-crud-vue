@@ -1,40 +1,23 @@
-# exemplo-crud-vue
+# Exemplo de CRUD em Vue
 
-This template should help get you started developing with Vue 3 in Vite.
+Este projeto possui um exemplo de cadastro de pessoas implementado em Vue.
 
-## Recommended IDE Setup
+Para executar este projeto localmente, primeiro você deve executar o servidor do projeto, que está [neste link](https://github.com/Jonatan7BR/exemplo-crud-json).
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+Em seguida, clone este projeto na sua máquina local, abra uma janela de terminal na pasta dele e execute o comando
 
-## Type Support for `.vue` Imports in TS
+```npm install```
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
+E, em seguida, o comando
 
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
+```npm run dev```
 
-1. Disable the built-in TypeScript Extension
-    1) Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-    2) Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
+Node.js deve estar instalado para executar este projeto.
 
-## Customize configuration
+Se necessário, a URL do servidor pode ser alterada no arquivo `src/api/people.ts`.
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+---
 
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Type-Check, Compile and Minify for Production
-
-```sh
-npm run build
-```
+### Outras versões deste projeto:
++ [Versão em Angular](https://github.com/Jonatan7BR/exemplo-crud-angular)
++ [Versão em Vue](https://github.com/Jonatan7BR/exemplo-crud-vue)
