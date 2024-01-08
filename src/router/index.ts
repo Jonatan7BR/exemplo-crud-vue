@@ -1,6 +1,7 @@
-import DetailsView from '@/views/DetailsView.vue';
 import HomeView from '@/views/HomeView.vue';
 import { createRouter, createWebHistory } from 'vue-router';
+
+const DetailsView = () => import('@/views/DetailsView.vue');
 
 const router = createRouter({
 	history: createWebHistory(),

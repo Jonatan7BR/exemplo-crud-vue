@@ -73,7 +73,14 @@
 <script setup lang="ts">
 import { useMessageStore } from '@/store/message-store';
 import { storeToRefs } from 'pinia';
+import { watch } from 'vue';
 
 const messageStore = useMessageStore();
 const { message, messageType, messageVisible } = storeToRefs(messageStore);
+
+watch(messageVisible, () => {
+	setTimeout(() => {
+		messageStore.hideMessage();
+	}, 5000);
+});
 </script>

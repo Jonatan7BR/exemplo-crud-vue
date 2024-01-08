@@ -85,7 +85,7 @@ onMounted(async () => {
 	try {
 		await peopleStore.getPeople();
 	} catch {
-		messageStore.sendMessage('Ocorreu um erro ao carregar os dados', MessageType.Error);
+		messageStore.showMessage('Ocorreu um erro ao carregar os dados', MessageType.Error);
 	} finally {
 		loaderStore.setLoading(false);
 	}

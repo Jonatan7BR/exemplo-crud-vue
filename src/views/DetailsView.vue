@@ -126,11 +126,11 @@ const state = ref('');
 
 const sendData = async (): Promise<void> => {
 	if (!cpfValid(cpf.value)) {
-		messageStore.sendMessage('O número do CPF está inválido', MessageType.Error);
+		messageStore.showMessage('O número do CPF está inválido', MessageType.Error);
 		return;
 	}
 	if (!phoneValid(phone.value)) {
-		messageStore.sendMessage('O número de telefone está em um formato inválido', MessageType.Error);
+		messageStore.showMessage('O número de telefone está em um formato inválido', MessageType.Error);
 		return;
 	}
 
@@ -147,20 +147,20 @@ const sendData = async (): Promise<void> => {
 	if (id) {
 		try {
 			await peopleStore.updatePerson(+id, body);
-			messageStore.sendMessage('Dados atualizados com sucesso');
+			messageStore.showMessage('Dados atualizados com sucesso');
 			router.push('/');
 		} catch {
-			messageStore.sendMessage('Não foi possível atualizar os dados do cadastro', MessageType.Error);
+			messageStore.showMessage('Não foi possível atualizar os dados do cadastro', MessageType.Error);
 		} finally {
 			loaderStore.setLoading(false);
 		}
 	} else {
 		try {
 			await peopleStore.registerPerson(body);
-			messageStore.sendMessage('Dados cadastrados com sucesso');
+			messageStore.showMessage('Dados cadastrados com sucesso');
 			router.push('/');
 		} catch {
-			messageStore.sendMessage('Não foi possível realizar o cadastro dos dados.', MessageType.Error);
+			messageStore.showMessage('Não foi possível realizar o cadastro dos dados.', MessageType.Error);
 		} finally {
 			loaderStore.setLoading(false);
 		}
@@ -179,10 +179,10 @@ const deleteData = async (confirmed: boolean): Promise<void> => {
 	loaderStore.setLoading(true);
 	try {
 		await peopleStore.removePerson(+id);
-		messageStore.sendMessage('Dados excluídos com sucesso');
+		messageStore.showMessage('Dados excluídos com sucesso');
 		router.push('/');
 	} catch {
-		messageStore.sendMessage('Não foi possível excluir os dados', MessageType.Error);
+		messageStore.showMessage('Não foi possível excluir os dados', MessageType.Error);
 	} finally {
 		loaderStore.setLoading(false);
 	}
@@ -198,7 +198,7 @@ onMounted(async () => {
 		try {
 			await peopleStore.getPerson(+id);
 		} catch {
-			messageStore.sendMessage('Ocorreu um erro ao carregar os dados', MessageType.Error);
+			messageStore.showMessage('Ocorreu um erro ao carregar os dados', MessageType.Error);
 		} finally {
 			loaderStore.setLoading(false);
 		}
